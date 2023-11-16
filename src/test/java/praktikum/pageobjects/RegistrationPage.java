@@ -1,5 +1,6 @@
 package praktikum.pageobjects;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -24,6 +25,7 @@ public class RegistrationPage {
         this.driver = driver;
     }
 
+    @Step("Создаем пользователя через форму регистрации")
     public void createAccount(String email, String name, String password) {
         driver.findElement(emailFiled).sendKeys(email);
         driver.findElement(nameFiled).sendKeys(name);
@@ -31,6 +33,7 @@ public class RegistrationPage {
         driver.findElement(registrationButton).click();
     }
 
+    @Step("Проверяем, что появилось сообщение <Пользователь уже существует>")
     public boolean userAlreadyExistsMessage() {
         List<WebElement> elements = driver.findElements(userAlredyExistsMessage);
         if(elements.size() == 0) {
@@ -45,11 +48,13 @@ public class RegistrationPage {
         return true;
     }
 
+    @Step("Проверяем, что появилось сообщение <Некорректный пароль>")
     public boolean isVisibleWrongPasswordMessage() {
         WebElement element = driver.findElement(wrongPasswordMessage);
         return element.isDisplayed() && element.getText().equals("Некорректный пароль");
     }
 
+    @Step("Нажимаем на ссылку <Войти>")
     public void clickByLoginAnchor() {
         new WebDriverWait(driver, 5)
                 .until(ExpectedConditions.elementToBeClickable(loginAnchor));

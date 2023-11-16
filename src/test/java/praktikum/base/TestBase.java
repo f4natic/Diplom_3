@@ -1,4 +1,4 @@
-package praktikum;
+package praktikum.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import praktikum.constants.Constants;
 import praktikum.models.Auth;
 import io.restassured.parsing.Parser;
@@ -25,7 +26,7 @@ import praktikum.pageobjects.MainPage;
 
 public class TestBase {
     protected static WebDriver driver;
-    private static final String url = "https://stellarburgers.nomoreparties.site";
+    protected static final String url = "https://stellarburgers.nomoreparties.site";
     private static final String BASE_URL = System.getenv("url") == null ? "https://stellarburgers.nomoreparties.site/" : System.getenv("url");
     private static final String API = System.getenv("api") == null ? "/api" : System.getenv("api");
     private static final Parser PARSER = Parser.fromContentType("application/json;charset=utf-8");
@@ -33,6 +34,7 @@ public class TestBase {
     protected static ObjectMapper mapper;
 
     @BeforeClass
+    @Step("Создание спецификации и мапера для rest-assured")
     public static void setUp() {
         RequestSpecBuilder builder = new RequestSpecBuilder()
                 .setBaseUri(BASE_URL)
@@ -41,24 +43,19 @@ public class TestBase {
                 .setAccept(ContentType.JSON);
         specification = builder.build();
         mapper = new ObjectMapper();
-
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.get(url);
     }
 
     @Before
+    @Step("Создание тестового пользователя")
     public void init() throws JsonProcessingException {
+        initDriver();
         createUser(Constants.EMAIL, Constants.NAME, Constants.PASSWORD);
     }
 
     @After
+    @Step("Удаление тестового пользователя и закрытие браузера")
     public void tearDown() throws JsonProcessingException {
         deleteUser(login(Constants.EMAIL, Constants.PASSWORD));
-    }
-
-    @AfterClass
-    public static void close() {
         driver.quit();
     }
 
@@ -86,5 +83,22 @@ public class TestBase {
         RestAssured.given(specification)
                 .header("Authorization", String.format("%s", token))
                 .delete("/auth/user");
+    }
+
+    @Step("Создание web драйвера")
+    protected void initDriver() {
+        String driverType = System.getenv("driverType") == null ? "" : System.getenv("driverType");
+        String path = System.getenv("driverPath") == null ? "" : System.getenv("driverType");
+        switch (driverType) {
+            case "yandex":
+                ChromeOptions options = new ChromeOptions();
+                options.setBinary(path);
+                driver = new ChromeDriver(options);
+                break;
+            default:
+                WebDriverManager.chromedriver().setup();
+                driver = new ChromeDriver();
+        }
+        driver.get(BASE_URL);
     }
 }

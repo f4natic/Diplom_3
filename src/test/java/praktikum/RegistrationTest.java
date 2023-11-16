@@ -1,13 +1,17 @@
 package praktikum;
 
+import io.qameta.allure.Epic;
+import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import praktikum.base.TestBase;
 import praktikum.constants.Constants;
 import praktikum.pageobjects.LoginPage;
 import praktikum.pageobjects.MainPage;
 import praktikum.pageobjects.RegistrationPage;
 
+@Epic("Тесты на создание пользователя")
 public class RegistrationTest extends TestBase {
     private MainPage mainPage;
     private LoginPage loginPage;
@@ -15,12 +19,14 @@ public class RegistrationTest extends TestBase {
 
     @Before
     public void init() {
+        initDriver();
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registrationPage = new RegistrationPage(driver);
     }
 
     @Test
+    @Step("Успешное создание пользователя")
     public void shouldCreateAccount() {
         mainPage.clickByLoginAnchor();
         loginPage.clickOnRegistrationLink();
@@ -29,6 +35,7 @@ public class RegistrationTest extends TestBase {
     }
 
     @Test
+    @Step("Успешное получение ошибки о неподходящем пароле")
     public void shouldReturnWrongPasswordMessage() {
         mainPage.clickByLoginAnchor();
         loginPage.clickOnRegistrationLink();

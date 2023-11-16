@@ -1,5 +1,6 @@
 package praktikum.pageobjects;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -15,6 +16,7 @@ public class RestorePasswordPage {
         this.driver = driver;
     }
 
+    @Step("Нажимаем на ссылку <Войти>")
     public void clickByLoginAnchor() {
         new WebDriverWait(driver, 5)
                 .until(ExpectedConditions.elementToBeClickable(loginAnchor));
